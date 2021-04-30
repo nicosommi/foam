@@ -16,9 +16,9 @@ jobs:
     env:
       OS: ${{ matrix.os }}
     steps:
+      - uses: actions/checkout@v1
       - name: Set version number
         run: echo "VERSION_NUMBER=$(jq -r .version packages/foam-vscode/package.json)" >> $GITHUB_ENV
-      - uses: actions/checkout@v1
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
