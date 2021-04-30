@@ -185,7 +185,9 @@ export abstract class URI {
     } else {
       newPath = paths.posix.join(uri.path, ...pathFragment);
     }
-    return URI.create({ ...uri, path: newPath });
+    return Object.assign(URI.create({ ...uri, path: newPath }), {
+      fsPath: newPath,
+    });
   }
 
   static toFsPath(uri: URI, keepDriveLetterCasing = true): string {

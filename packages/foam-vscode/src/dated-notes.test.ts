@@ -1,7 +1,8 @@
-import { Uri, workspace } from 'vscode';
+import { workspace } from 'vscode';
 import { getDailyNotePath } from './dated-notes';
 import { URI } from 'foam-core';
 import { isWindows } from './utils';
+import { joinPath } from './utils/join-path';
 
 describe('getDailyNotePath', () => {
   const date = new Date('2021-02-07T00:00:00Z');
@@ -13,7 +14,7 @@ describe('getDailyNotePath', () => {
   test('Adds the root directory to relative directories', async () => {
     const config = 'journal';
 
-    const expectedPath = Uri.joinPath(
+    const expectedPath = joinPath(
       workspace.workspaceFolders[0].uri,
       config,
       `${isoDate}.md`

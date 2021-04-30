@@ -13,6 +13,7 @@ import {
 } from 'foam-core';
 import { TextEncoder } from 'util';
 import { toVsCodeUri } from '../utils/vsc-utils';
+import { joinPath } from '../utils/join-path';
 
 const position = Range.create(0, 0, 0, 100);
 
@@ -126,7 +127,7 @@ export const randomString = (len = 5) =>
 export const createFile = async (content: string, filepath?: string) => {
   const rootUri = vscode.workspace.workspaceFolders[0].uri;
   filepath = filepath ?? randomString() + '.md';
-  const uri = vscode.Uri.joinPath(rootUri, filepath);
+  const uri = joinPath(rootUri, filepath);
   const filenameComponents = path.parse(uri.fsPath);
   await vscode.workspace.fs.writeFile(uri, new TextEncoder().encode(content));
   return { uri, content, ...filenameComponents };

@@ -10,9 +10,10 @@ import * as path from 'path';
 import { FoamFeature } from '../types';
 import { TextEncoder } from 'util';
 import { focusNote } from '../utils';
+import { joinPath } from '../utils/join-path';
 import { existsSync } from 'fs';
 
-const templatesDir = Uri.joinPath(
+const templatesDir = joinPath(
   workspace.workspaceFolders[0].uri,
   '.foam',
   'templates'
@@ -151,7 +152,7 @@ async function createNoteFromTemplate(): Promise<void> {
   }
 
   const templateText = await workspace.fs.readFile(
-    Uri.joinPath(templatesDir, selectedTemplate)
+    joinPath(templatesDir, selectedTemplate)
   );
 
   const givenValues = new Map<string, string>();
@@ -166,7 +167,7 @@ async function createNoteFromTemplate(): Promise<void> {
 
   const defaultSlug = resolvedValues.get('FOAM_TITLE') || 'New Note';
   const defaultFileName = `${defaultSlug}.md`;
-  const defaultDir = Uri.joinPath(currentDir, defaultFileName);
+  const defaultDir = joinPath(currentDir, defaultFileName);
   const filename = await window.showInputBox({
     prompt: `Enter the filename for the new note`,
     value: defaultDir.fsPath,
@@ -193,7 +194,7 @@ async function createNoteFromTemplate(): Promise<void> {
 
 async function createNewTemplate(): Promise<void> {
   const defaultFileName = 'new-template.md';
-  const defaultTemplate = Uri.joinPath(
+  const defaultTemplate = joinPath(
     workspace.workspaceFolders[0].uri,
     '.foam',
     'templates',
