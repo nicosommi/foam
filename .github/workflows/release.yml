@@ -1,0 +1,49 @@
+name: GH Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  rc:
+    name: GH Release for vscode extension
+    strategy:
+      matrix:
+        os: [macos-10.15, ubuntu-18.04, windows-2019]
+    runs-on: ${{ matrix.os }}
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'nicosommi/foam'
+    env:
+      OS: ${{ matrix.os }}
+    steps:
+      - name: Set version number
+        run: echo "VERSION_NUMBER=$(jq -r .version packages/foam-vscode/package.json)" >> $GITHUB_ENV
+      - uses: actions/checkout@v1
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12"
+      - name: Restore Dependencies and VS Code test instance
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            */*/node_modules
+            packages/foam-vscode/.vscode-test
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('packages/foam-vscode/src/test/run-tests.ts') }}
+      - name: Install Dependencies
+        run: yarn
+      - name: Build Packages
+        run: yarn build
+      - name: Package extension
+        uses: GabrielBB/xvfb-action@v1.0
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          run: yarn vscode:package-extension
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: packages/foam-vscode/foam-vscode-${{ env.VERSION_NUMBER }}.vsix
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
